@@ -2,13 +2,11 @@
 #include "led.h"
 #include <LPC21xx.H>
 
-enum LedState{LED_LEFT, LED_RIGHT};
+enum LedState{LED_LEFT, LED_RIGHT, LED_STAY};
 enum DirectionState{STATE0, STATE1, STATE2, STATE3, STATE4, STATE5};
-enum LedMove{LED_MOVE_LEFT, LED_MOVE_RIGHT, LED_STAY};
 
 enum LedState eLedState = LED_LEFT;
 enum DirectionState eDirectionState = STATE0;
-enum LedMove eLedMove = LED_STAY;
 
 unsigned int uiSwitchCounter;
 unsigned char uiCounter;
@@ -25,7 +23,6 @@ void Delay(unsigned int uiWaitTime){
 
 int main()
 {
-	InitTimer0();
 	LedInit();
 	KeyboardInit();
 		while(1)
@@ -35,36 +32,8 @@ int main()
 					eLedState=LED_RIGHT;
 					Led_StepRight();
 					break;
-				case LED_RIGHT:
+				default :
 					eLedState=LED_LEFT;
-					Led_StepLeft();
-					break;
-			}
-			Delay(500);
-		
-			switch (eDirectionState){
-				case (STATE0):
-					eDirectionState=STATE1;
-					Led_StepRight();
-					break;
-				case (STATE1):
-					eDirectionState=STATE2;
-					Led_StepRight();
-					break;
-				case (STATE2):
-					eDirectionState=STATE3;
-					Led_StepRight();
-					break;
-				case (STATE3):
-					eDirectionState=STATE4;
-					Led_StepLeft();
-					break;
-				case (STATE4):
-					eDirectionState=STATE5;
-					Led_StepLeft();
-					break;
-				case (STATE5):
-					eDirectionState=STATE0;
 					Led_StepLeft();
 					break;
 			}
@@ -72,61 +41,64 @@ int main()
 			
 ////zadanie 4
 			
-			switch (eLedMove){
-				case (LED_MOVE_RIGHT):
+			switch (eLedState){
+				case (LED_RIGHT):
 					for(uiCounter=0; uiCounter<3; uiCounter++){
 						Led_StepRight();
 					}
 					if(eKeyboard_Read()==RELASED){
-						eLedMove=LED_STAY;
+						eLedState=LED_STAY;
 					}
 					break;
 				default:
 					if(eKeyboard_Read()==BUTTON_1){
-						eLedMove=LED_MOVE_RIGHT;
+						eLedState=LED_RIGHT;
 					}
 					break;
 			}
 			
 ////zadanie 5
 			
-			switch (eLedMove){
-				case (LED_MOVE_RIGHT):
+			switch (eLedState){
+				case (LED_RIGHT):
 					Led_StepRight();
 					if(eKeyboard_Read()==BUTTON_1){
-						eLedMove=LED_STAY;
+						eLedState=LED_STAY;
 					}
 					break;
 				default:
 					if(eKeyboard_Read()==BUTTON_2){
-						eLedMove=LED_MOVE_RIGHT;
+						eLedState=LED_RIGHT;
 					}
 					break;
 			}
 			
 ////zadanie 6
 			
-			switch (eLedMove){
+			switch (eLedState){
 				case (LED_STAY):
 					if (eKeyboard_Read()==BUTTON_1){
-						eLedMove=LED_MOVE_LEFT;
+						eLedState=LED_LEFT;
 					}
 					else if (eKeyboard_Read()==BUTTON_3){
-						eLedMove=LED_MOVE_RIGHT;
+						eLedState=LED_RIGHT;
 					}
 					break;
-				case (LED_MOVE_LEFT):
+				case (LED_LEFT):
 					Led_StepLeft();
 					if(eKeyboard_Read()==BUTTON_2){
-						eLedMove=LED_STAY;
+						eLedState=LED_STAY;
 					}
 					break;
-				case (LED_MOVE_RIGHT):
+				case (LED_RIGHT):
 					if (eKeyboard_Read()==BUTTON_2){
-						eLedMove=LED_STAY;
+						eLedState=LED_STAY;
 					}
 					break;
 			}
 			Delay(100);
 		}
+		
+
+
 }

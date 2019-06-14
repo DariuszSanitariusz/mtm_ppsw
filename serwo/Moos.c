@@ -1,6 +1,5 @@
 #include "keyboard.h"
 #include "led.h"
-#include "timer.h"
 #include <LPC21xx.H>
 
 enum LedState{LED_LEFT, LED_RIGHT};
@@ -30,10 +29,19 @@ int main()
 	LedInit();
 	KeyboardInit();
 	while(1)
-		{		
-			Led_StepLeft();
-			WaitOnTimer0(250);
-			WaitOnTimer0Match0();
+		{	
+			switch (eKeyboard_Read()){
+				case BUTTON_1:
+					Led_StepRight();
+					break;
+				case BUTTON_2:
+					Led_StepLeft();
+					break;
+				case RELASED:
+					break;
+				default:
+					break;
+			}		
 		}
 		
 
