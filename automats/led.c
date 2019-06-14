@@ -6,7 +6,7 @@
 #define LED2_bm (1<<18)
 #define LED3_bm (1<<19)
 
-void LedInit(void){
+void LedInit(void)/* LedInit change */{
 	IO1DIR=IO1DIR|(LED0_bm|LED1_bm|LED2_bm|LED3_bm);
 	IO1SET= LED0_bm;
 }
