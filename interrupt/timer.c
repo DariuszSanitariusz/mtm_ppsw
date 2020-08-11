@@ -21,7 +21,7 @@ void WaitOnTimer0(unsigned int uiTime)
 {
 	T0TCR = T0TCR | RESET_bm;
 	T0TCR = T0TCR & ~RESET_bm;
-	while((T0TCR < uiTime*UsToClk)){}
+	while((T0TC < uiTime*UsToClk)){}
 }
 
 void InitTimer0Match0(unsigned int iDelayTime)

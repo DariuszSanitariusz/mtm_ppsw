@@ -6,11 +6,8 @@
 
 int main()
 {
-	InitTimer0();
 	LedInit();
 	KeyboardInit();
-	DetectorInit();
-	ServoCallib();
 	ServoInit(25000);
 	
 	while(1){
@@ -26,6 +23,5 @@ int main()
 		if(eKeyboard_Read()==BUTTON_4){
 			ServoGoTo(36);
 		}
-		
 	}
 }

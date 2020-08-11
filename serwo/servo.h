@@ -6,6 +6,7 @@ typedef enum DetectorState{
 typedef enum ServoState{
 CALLIB, 
 IDLE,
+OFFSET,
 IN_PROGRESS
 } ServoState;
 

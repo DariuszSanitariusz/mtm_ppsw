@@ -4,6 +4,11 @@
 #include "timer_interrupts.h"
 
 #define DETEKTOR_bm (1<<10)
+#define GET_OFFSET 12 
+
+enum DetectorState{ACTIVE, INACTIVE};
+
+enum ServoState{CALLIB, IDLE, OFFSET, IN_PROGRESS};
 
 struct Servo
 {
@@ -22,24 +27,53 @@ void ServoCallib(void)
 	sServo.eState = CALLIB;
 }
 
+enum DetectorState eReadDetector()
+{
+	int iDetectorState = IO0PIN & DETEKTOR_bm;
+	if (iDetectorState == 0)
+	{
+		return ACTIVE;
+	}
+	return INACTIVE;
+}
+
 void Automat()
 {
 	switch(sServo.eState){
+/**********************************************/
 		case CALLIB:
 			if(eReadDetector() == INACTIVE){
 				Led_StepRight();
 				sServo.eState = CALLIB;
 			}
 			else{
-				Led_StepRight();
-				sServo.eState = IDLE;
 				sServo.uiCurrentPosition = 0;
 				sServo.uiDesiredPosition = 0;
+				sServo.eState = OFFSET;
 			}
-			break;
-			
+		break;
+/**********************************************/
+		case OFFSET:
+			if(sServo.uiCurrentPosition == GET_OFFSET){
+				sServo.uiCurrentPosition = 0;
+				sServo.eState = IDLE;
+			}
+			else{
+				Led_StepRight();
+				sServo.uiCurrentPosition++;
+				sServo.eState = OFFSET;
+			}
+		break;
+/**********************************************/
+		case IDLE:
+			if(sServo.uiDesiredPosition != sServo.uiCurrentPosition)
+				sServo.eState = IN_PROGRESS;
+			else
+				sServo.eState = IDLE;
+		break;
+/**********************************************/
 		case IN_PROGRESS:
-			if(sServo.uiDesiredPosition!=sServo.uiCurrentPosition){
+			if(sServo.uiDesiredPosition != sServo.uiCurrentPosition){
 				if(sServo.uiDesiredPosition > sServo.uiCurrentPosition){
 					Led_StepRight();
 					sServo.uiCurrentPosition++;
@@ -54,13 +88,7 @@ void Automat()
 			else
 				sServo.eState = IDLE;		
 		break;
-		
-		case IDLE:
-			if(sServo.uiDesiredPosition != sServo.uiCurrentPosition)
-				sServo.eState = IN_PROGRESS;
-			else
-				sServo.eState = IDLE;
-		break;
+/**********************************************/
 		}
 }
 
@@ -77,12 +105,4 @@ void ServoGoTo(unsigned int uiPosition){
 	sServo.uiDesiredPosition = uiPosition;
 }
 
-enum DetectorState eReadDetector()
-{
-	int iDetectorState = IO0PIN & DETEKTOR_bm;
-	if (iDetectorState == 0)
-	{
-		return ACTIVE;
-	}
-	return INACTIVE;
-}
+
